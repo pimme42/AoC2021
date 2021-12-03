@@ -1,5 +1,3 @@
-import 'package:y2021/y2021.dart' as y2021;
-
 void main(List<String> arguments) {
   String input = """
 183
