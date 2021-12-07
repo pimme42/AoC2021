@@ -18,14 +18,14 @@ String readFile(String path) {
   }
 }
 
-List<String> readFileAsLines(String path) {
+List<String> readFileAsLines(String path, {String separator = "\n"}) {
   String content = readFile(path);
-  return content.split("\n");
+  return content.split(separator);
 }
 
-List<int> readFileAsIntLines(String path) {
+List<int> readFileAsIntLines(String path, {String separator = "\n"}) {
   String content = readFile(path);
-  return content.split("\n").map((element) {
+  return content.split(separator).map((element) {
     return int.tryParse(element)!;
   }).toList();
 }
