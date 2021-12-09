@@ -20,7 +20,7 @@ String readFile(String path) {
 
 List<String> readFileAsLines(String path, {String separator = "\n"}) {
   String content = readFile(path);
-  return content.split(separator);
+  return content.trim().split(separator);
 }
 
 List<int> readFileAsIntLines(String path, {String separator = "\n"}) {
