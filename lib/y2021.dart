@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:collection';
 
 bool fileExistsSync(String path) {
   return File(path).existsSync();
@@ -25,7 +26,7 @@ List<String> readFileAsLines(String path, {String separator = "\n"}) {
 
 List<int> readFileAsIntLines(String path, {String separator = "\n"}) {
   String content = readFile(path);
-  return content.split(separator).map((element) {
+  return content.trim().split(separator).map((element) {
     return int.tryParse(element)!;
   }).toList();
 }
@@ -39,4 +40,32 @@ int binaryToInt(String binary) {
     }
   }
   return res;
+}
+
+class Stack<T> {
+  final _stack = Queue<T>();
+
+  int get length => _stack.length;
+
+  bool canPop() => _stack.isNotEmpty;
+
+  void clearStack() {
+    while (_stack.isNotEmpty) {
+      _stack.removeLast();
+    }
+  }
+
+  void push(T element) {
+    _stack.addLast(element);
+  }
+
+  T pop() {
+    T lastElement = _stack.last;
+    _stack.removeLast();
+    return lastElement;
+  }
+
+  T peak() => _stack.last;
+
+  String toString() => _stack.toString();
 }
