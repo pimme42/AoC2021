@@ -3,7 +3,7 @@ import 'package:y2021/y2021.dart';
 void main(List<String>? argv) {
   String path = "./bin/12/";
   String fileName = path + "input";
-  fileName = path + "testInput";
+//  fileName = path + "testInput";
 
 //  String content = readFile(fileName);
   List<String> content = readFileAsLines(fileName);
@@ -15,8 +15,8 @@ void main(List<String>? argv) {
 
   for (var line in content) {
     List<String> parts = line.split("-");
-    String first = parts[0];
-    String second = parts[1];
+    String first = parts[0].trim();
+    String second = parts[1].trim();
     if (nodes[first] == null) {
       nodes[first] = Node(first, first == first.toUpperCase());
     }
@@ -31,7 +31,7 @@ void main(List<String>? argv) {
     if (node.name != "start" &&
         node.name != "end" &&
         node.name == node.name.toLowerCase()) {
-      nodes.forEach((key, value) {
+/*      nodes.forEach((key, value) {
         value.neighbours = value.neighbours
             .where((element) => !element.name.contains("2"))
             .toList();
@@ -42,22 +42,21 @@ void main(List<String>? argv) {
       for (Node neighbour in node.neighbours) {
         neighbour.addNeighbour(newNode);
       }
-
-      List<Node> newList = [...List.of(nodes.values), newNode];
-      findPaths(paths,
-          newList.singleWhere((element) => element.name == "start"), true);
-      print(newList);
+*/
+      findPaths(paths, nodes["start"]!, node, true);
+//      print(paths);
     }
   }
 
   print(nodes.values);
 //  paths = findPaths(paths, nodes["start"]!);
-  paths = paths.where((element) => element.contains("end")).toList();
+  paths = paths.where((element) => element.contains("end")).toSet().toList();
   print(paths);
   print(paths.length);
 }
 
-List<String> findPaths(List<String> paths, Node start, [bool newPath = false]) {
+List<String> findPaths(List<String> paths, Node start, Node smallAllowedTwice,
+    [bool newPath = false]) {
   if (paths.isEmpty || newPath) {
     paths.add("");
   }
@@ -69,10 +68,16 @@ List<String> findPaths(List<String> paths, Node start, [bool newPath = false]) {
     for (Node node in start.neighbours) {
       paths.add(paths[index]);
 //      print(paths[index]);
+      RegExp regExp = RegExp(node.name);
+//      print(
+//          "${paths.last} :: ${node.name} :: ${smallAllowedTwice.name} :: ${regExp.allMatches(paths.last).length}");
+
       if (node.name == node.name.toUpperCase() ||
-          !paths.last.contains(node.name)) {
+          !paths.last.contains(node.name) ||
+          (node.name == smallAllowedTwice.name &&
+              regExp.allMatches(paths.last).length == 1)) {
 //        print("From ${start.name} -> To ${node.name}");
-        (findPaths(paths, node));
+        (findPaths(paths, node, smallAllowedTwice));
       }
     }
   }
