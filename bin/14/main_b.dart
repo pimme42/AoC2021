@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:y2021/y2021.dart';
 
 void main(List<String>? argv) {
@@ -11,10 +9,11 @@ void main(List<String>? argv) {
   List<String> content = readFileAsLines(fileName);
 //  List<int> content = readFileAsIntLines(fileName);
 
-  LinkedList<Entry> list = LinkedList();
+  Map<String, int> pairs = {};
 
-  for (int i = 0; i < content[0].trim().length; i++) {
-    list.add(Entry(content[0][i]));
+  for (int i = 0; i < content[0].trim().length - 1; i++) {
+    String pair = content[0][i] + content[0][i + 1];
+    pairs[pair] = (pairs[pair] ?? 0) + 1;
   }
 
   Map<String, String> rules = {};
@@ -27,27 +26,33 @@ void main(List<String>? argv) {
   }
 
   for (int i = 0; i < 40; i++) {
-    print(i);
-    Entry? nextEntry = list.first;
-    while (nextEntry != null) {
-      String char = nextEntry.value;
-      if (nextEntry.next != null) {
-        String pair = char + nextEntry.next?.value;
-        String? insert = rules[pair];
-        if (insert != null) {
-          nextEntry.insertAfter(Entry(insert));
-          nextEntry = nextEntry.next;
-        }
+    Map<String, int> newPairs = {};
+    for (String pair in pairs.keys) {
+      String? insert = rules[pair];
+      if (insert != null) {
+        String pair1 = pair.substring(0, 1) + insert;
+        String pair2 = insert + pair.substring(1, 2);
+        int num1 = newPairs[pair1] ?? 0;
+        int num2 = newPairs[pair2] ?? 0;
+        newPairs[pair1] = num1 + pairs[pair]!;
+        newPairs[pair2] = num2 + pairs[pair]!;
+      } else {
+        print("No rule!");
+        newPairs[pair] = 1;
       }
-      nextEntry = nextEntry?.next;
     }
+    pairs = newPairs;
   }
 
   Map<String, int> counter = {};
-  Iterator<Entry> it = list.iterator;
-  while (it.moveNext()) {
-    String char = it.current.value;
-    counter[char] = (counter[char] ?? 0) + 1;
+  for (String pair in pairs.keys) {
+    String char1 = pair.substring(0, 1);
+    String char2 = pair.substring(1, 2);
+    counter[char1] = (counter[char1] ?? 0) + pairs[pair]!;
+    counter[char2] = (counter[char2] ?? 0) + pairs[pair]!;
+  }
+  for (String char in counter.keys) {
+    counter[char] = (counter[char]! / 2).ceil();
   }
   print(counter);
 
@@ -58,16 +63,6 @@ void main(List<String>? argv) {
       .reduce((value, element) => value < element ? value : element);
 
   print(max - min);
-  list.clear();
-}
 
-class Entry<T> extends LinkedListEntry<Entry> {
-  T value;
-
-  Entry(this.value) : super();
-
-  @override
-  String toString() {
-    return value.toString();
-  }
+// 2276644000111
 }
